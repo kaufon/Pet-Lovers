@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id            String        @id @default(uuid())
+  name          String
+  socialName    String
+  registered_at DateTime      @default(now())
+  Cpf           Cpf?
+  rgs           Rg[]
+  pets          Pet[]
+  phones        Phone[]
+  Consumption   Consumption[]
+
+  @@map("clients")
+}
+
+model Item {
+  id          String        @id @default(uuid())
+  name        String
+  price       Decimal
+  item_type   String
+  Consumption Consumption[]
+
+@@map("item")
+}
+
+model Cpf {
+  id            String @id @default(uuid())
+  value         String
+  client_id     String @unique()
+  emission_date DateTime
+  client        Client @relation(fields: [client_id], references: [id], onDelete: Cascade)
+
+  @@map("cpfs")
+}
+
+model Phone {
+  id        String @id @default(uuid())
+  ddd       String
+  number    String
+  client_id String
+  client    Client @relation(fields: [client_id], references: [id], onDelete: Cascade)
+}
+
+model Rg {
+  id            String @id @default(uuid())
+  value         String
+  client_id     String @unique()
+  emission_date DateTime
+
+  client Client @relation(fields: [client_id], references: [id], onDelete: Cascade)
+
+  @@map("rgs")
+}
+
+model Pet {
+  id        String @id @default(uuid())
+  name      String
+  type      String
+  gender    String
+  race      String
+  client_id String @unique()
+  client    Client @relation(fields: [client_id], references: [id], onDelete: Cascade)
+
+  @@map("pets")
+}
+
+model Consumption {
+  id         String @id @default(uuid())
+  client_id  String
+  item_id    String
+  amount   Int
+  client     Client @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  item       Item   @relation(fields: [item_id], references: [id], onDelete: Cascade)
+
+  @@index([item_id])
+  @@map("consumptions")
+}
