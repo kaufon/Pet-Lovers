@@ -6,14 +6,12 @@ Antes de começar, certifique-se de que você tem o seguinte instalado em sua m�
 
 1. **Node.js**: Baixe e instale o Node.js a partir de [nodejs.org](https://nodejs.org/). Isso também instalará o npm (Node Package Manager).
 2. **Git**: Baixe e instale o Git a partir de [git-scm.com](https://git-scm.com/).
-3. **JDK17**: Baixe e instale Java Development Kit(acima da versão 17) a partir de [oracle](https://www.oracle.com/br/java/technologies/downloads/)
-
 ### Passo 1: Clonar o Repositório
 
 Abra o seu prompt de comando (cmd) ou PowerShell e execute o seguinte comando para clonar o repositório:
 
 ```bash
-git clone https://github.com/kaufon/Pet-Lovers-4.git
+git clone https://github.com/kaufon/Pet-Lovers.git
 ```
 
 ### Passo 2: Navegar até o Diretório do Projeto
@@ -21,7 +19,7 @@ git clone https://github.com/kaufon/Pet-Lovers-4.git
 Mude para o diretório do projeto:
 
 ```bash
-cd  Pet-Lovers-4/
+cd  Pet-Lovers/
 ```
 
 ### Passo 2: Instalar Dependências
@@ -35,7 +33,7 @@ npm install
 
 ### Passo 3: Executar o Projeto
 
-Após configurar as variáveis de ambiente, você pode executar o projeto usando o seguinte comando na pasta `Pet-Lovers-3`:
+Após configurar as variáveis de ambiente, você pode executar o projeto usando o seguinte comando na pasta `Pet-Lovers`:
 
 ```bash
 npm run dev
