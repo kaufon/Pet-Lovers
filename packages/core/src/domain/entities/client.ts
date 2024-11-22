@@ -64,11 +64,10 @@ export class Client extends Entity<ClientProps> {
       id: this.id,
       name: this.props.name,
       socialName: this.props.socialName,
-      cpf: this.props.cpf,
-      pets: this.props.pets,
-      rgs: this.props.rgs,
-      phones: this.props.phones,
+      cpf: this.props.cpf.dto,
+      pets: this.props.pets.map((pet) => pet.dto),
+      rgs: this.props.rgs.map((rg) => rg.dto),
+      phones: this.props.phones.map((phone) => phone.dto),
     };
   }
 }
-
