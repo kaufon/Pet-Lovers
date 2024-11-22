@@ -1,4 +1,5 @@
 export { RgDto } from "./rg-dto";
+export {ConsumptionDto} from "./consumption-dto"
 export { CpfDto } from "./cpf-dto";
 export { PetDto } from "./pets-dto";
 export { ClientDto } from "./client-dto";

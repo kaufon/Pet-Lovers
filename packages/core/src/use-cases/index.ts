@@ -1,3 +1,4 @@
-export * from './suppliers'
-export * from './receipts'
 export * from './products'
+export * from './consumptions'
+export * from "./clients"
+export * from "./services"
