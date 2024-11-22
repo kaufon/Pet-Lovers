@@ -1,5 +1,4 @@
-
-export {PrismaSuppliersRepositoy} from './prisma-suppliers-repository'
-export {PrismaProductRepository} from './prisma-product-repository'
-export {PrismaReceiptRepository} from './prisma-receipt-repository'
-
+export {PrismaProductsRepository} from "./prisma-products-repository"
+export {PrismaConsumptionRepository} from "./prisma-consumption-repository"
+export {PrismaClientsRepository} from "./prisma-clients-repository"
+export {PrismaServicesRepository} from "./prisma-services-repository"

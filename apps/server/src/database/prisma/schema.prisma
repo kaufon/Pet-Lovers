@@ -26,17 +26,18 @@ model Item {
   name        String
   price       Decimal
   item_type   String
+  ordersCount Int           @default(0)
   Consumption Consumption[]
 
-@@map("item")
+  @@map("item")
 }
 
 model Cpf {
-  id            String @id @default(uuid())
+  id            String   @id @default(uuid())
   value         String
-  client_id     String @unique()
+  client_id     String   @unique()
   emission_date DateTime
-  client        Client @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  client        Client   @relation(fields: [client_id], references: [id], onDelete: Cascade)
 
   @@map("cpfs")
 }
@@ -50,9 +51,9 @@ model Phone {
 }
 
 model Rg {
-  id            String @id @default(uuid())
+  id            String   @id @default(uuid())
   value         String
-  client_id     String @unique()
+  client_id     String
   emission_date DateTime
 
   client Client @relation(fields: [client_id], references: [id], onDelete: Cascade)
@@ -66,19 +67,20 @@ model Pet {
   type      String
   gender    String
   race      String
-  client_id String @unique()
+  client_id String
   client    Client @relation(fields: [client_id], references: [id], onDelete: Cascade)
 
   @@map("pets")
 }
 
 model Consumption {
-  id         String @id @default(uuid())
-  client_id  String
-  item_id    String
-  amount   Int
-  client     Client @relation(fields: [client_id], references: [id], onDelete: Cascade)
-  item       Item   @relation(fields: [item_id], references: [id], onDelete: Cascade)
+  id        String @id @default(uuid())
+  client_id String
+  item_id   String
+  amount    Int
+  price     Int
+  client    Client @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  item      Item   @relation(fields: [item_id], references: [id], onDelete: Cascade)
 
   @@index([item_id])
   @@map("consumptions")
