@@ -6,7 +6,7 @@ export class Service extends Item {
     return new Service(dto, dto.id)
   }
 
-  update(dto: ItemDto): Service {
+  update(dto: Partial<ItemDto>): Service {
     return Service.create({ ...this.dto, ...dto })
   }
 
