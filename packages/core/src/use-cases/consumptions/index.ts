@@ -1,0 +1,5 @@
+export {UpdateConsumptionUseCase} from "./update-consumption-use-case"
+export {ListMostConsumedItems} from "./list-most-consumed-items-use-case"
+export {RegisterConsumptionUseCase} from "./register-consumption-use-case"
+export {DeleteConsumptionUseCase} from "./delete-consumption-use-case"
+export {ListConsumptionsUseCase} from "./list-consumptions-use-case"
