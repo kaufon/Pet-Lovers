@@ -9,6 +9,7 @@ export class PrismaProductsMapper {
       name: prismaProduct.name,
       price: Number(prismaProduct.price),
       type: "PRODUCT",
+      ordersCount: prismaProduct.ordersCount,
     });
   }
   toPrisma(product: Product): PrismaProduct {
@@ -17,7 +18,7 @@ export class PrismaProductsMapper {
       name: product.name,
       item_type: "PRODUCT",
       price: new Decimal(product.price),
-      consumption_number: product.ordersCount,
+      ordersCount: product.ordersCount,
     };
   }
 }

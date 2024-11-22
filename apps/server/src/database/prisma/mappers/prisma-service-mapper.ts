@@ -9,7 +9,7 @@ export class PrismaServiceMapper {
       name: prismaService.name,
       price: Number(prismaService.price),
       type: "SERVICE",
-      ordersCount: prismaService.consumption_number,
+      ordersCount: prismaService.ordersCount,
     });
   }
   toPrisma(service: Service): PrismaService {
@@ -18,7 +18,7 @@ export class PrismaServiceMapper {
       name: service.name,
       price: new Decimal(service.price),
       item_type: "SERVICE",
-      consumption_number: service.ordersCount,
+      ordersCount: service.ordersCount,
     };
   }
 }

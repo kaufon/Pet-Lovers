@@ -12,6 +12,7 @@ export class PrismaClientsMapper {
         emissionDate: prismaClient.cpf.emission_date,
       },
       pets: prismaClient.pets.map((pet) => ({
+        id: pet.id,
         name: pet.name,
         race: pet.race,
         type: pet.type,
