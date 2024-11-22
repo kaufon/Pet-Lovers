@@ -1,0 +1,6 @@
+export {ListTopSpendersUseCase} from "./list-top-spenders-use-case"
+export {ListTopconsumersUseCase} from "./list-top-consumers-use-case"
+export {RegisterClientUseCase} from "./register-client-use-case"
+export {DeleteClientUseCase} from "./delete-client-use-case"
+export {UpdateClientUseCase} from "./update-client-use-case"
+export {ListClientUseCase} from "./list-clients-use-case"
