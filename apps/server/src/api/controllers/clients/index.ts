@@ -1,4 +1,7 @@
 export {ListClientController} from "./list-client-controller"
+export {GetClientController} from "./get-client-controller"
+export {ListMostConsumedByTypeController} from "./list-most-consumed-by-type-controller"
+export {ListMostConsumedByRaceController} from "./list-most-consumed-by-race-controller"
 export {ListTopSpenderController} from "./list-top-spenders-controller"
 export {ListTopConsumersControllers} from "./list-top-consumers-controller"
 export {UpdateClientController} from "./update-client-controller"

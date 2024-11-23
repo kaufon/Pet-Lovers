@@ -200,7 +200,9 @@ export class PrismaClientsRepository implements IClientsRepository {
 
     return clients;
   }
-  async findTop5Spenders(): Promise<{ clientId: string; name: string; totalSpended:  number }[]> {
+  async findTop5Spenders(): Promise<
+    { clientId: string; name: string; totalSpended: number }[]
+  > {
     const topConsumers = await prisma.consumption.groupBy({
       by: ["client_id"],
       _sum: {
@@ -229,6 +231,169 @@ export class PrismaClientsRepository implements IClientsRepository {
     );
 
     return clients;
-
   }
+  async findTop10ConsumedItemsByRace(): Promise<
+    {
+      petRace: string;
+      productName: string;
+      totalAmount: number;
+      itemId: string;
+    }[]
+  > {
+    const topConsumedByRace = await prisma.consumption.groupBy({
+      by: ["item_id", "client_id"],
+      _sum: {
+        amount: true,
+      },
+      orderBy: {
+        _sum: {
+          amount: "desc",
+        },
+      },
+      take: 10,
+      where: {
+        client: {
+          pets: {
+            some: {},
+          },
+        },
+      },
+    });
+
+    const itemsWithPetRaces = await Promise.all(
+      topConsumedByRace.map(async (consumption) => {
+        const consumedItem = await prisma.item.findUnique({
+          where: { id: consumption.item_id },
+          select: { name: true },
+        });
+
+        const petRaces = await prisma.pet.findMany({
+          where: {
+            client_id: consumption.client_id,
+          },
+          select: { race: true },
+        });
+
+        const petRace = petRaces.length > 0 ? petRaces[0].race : "Unknown";
+
+        return {
+          petRace,
+          productName: consumedItem?.name ?? "Unknown",
+          totalAmount: consumption._sum.amount || 0,
+          itemId: consumption.item_id,
+        };
+      }),
+    );
+
+    return itemsWithPetRaces;
+  }
+  async findTop10ConsumedItemsByType(): Promise<
+    {
+      petType: string;
+      productName: string;
+      totalAmount: number;
+      itemId: string;
+    }[]
+  > {
+    const topConsumedByRace = await prisma.consumption.groupBy({
+      by: ["item_id", "client_id"],
+      _sum: {
+        amount: true,
+      },
+      orderBy: {
+        _sum: {
+          amount: "desc",
+        },
+      },
+      take: 10,
+      where: {
+        client: {
+          pets: {
+            some: {},
+          },
+        },
+      },
+    });
+
+    const itemsWithPetRaces = await Promise.all(
+      topConsumedByRace.map(async (consumption) => {
+        const consumedItem = await prisma.item.findUnique({
+          where: { id: consumption.item_id },
+          select: { name: true },
+        });
+
+        const petTypes = await prisma.pet.findMany({
+          where: {
+            client_id: consumption.client_id,
+          },
+          select: { type: true },
+        });
+
+        const petType = petTypes.length > 0 ? petTypes[0].type : "Unknown";
+
+        return {
+          petType,
+          productName: consumedItem?.name ?? "Unknown",
+          totalAmount: consumption._sum.amount || 0,
+          itemId: consumption.item_id,
+        };
+      }),
+    );
+
+    return itemsWithPetRaces;
+  }
+  async getClientDetails(clientId: string): Promise<{
+  client: Client | null;
+  consumptions: {
+    itemId: string;
+    itemName: string;
+    totalAmount: number;
+    totalSpent: number;
+  }[];
+}> {
+  const prismaClient = await prisma.client.findUnique({
+    where: { id: clientId },
+    include: {
+      Cpf: true,
+      phones: true,
+      pets: true,
+      rgs: true,
+      Consumption: {
+        select: {
+          item_id: true,
+          amount: true,
+          price: true,
+          item: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!prismaClient) return { client: null, consumptions: [] };
+
+  const client = this.mapper.toDomain({
+    id: prismaClient.id,
+    cpf: prismaClient.Cpf,
+    name: prismaClient.name,
+    socialName: prismaClient.socialName,
+    rgs: prismaClient.rgs,
+    pets: prismaClient.pets,
+    phones: prismaClient.phones,
+    registered_at: prismaClient.registered_at,
+  } as PrismaClient);
+
+  const consumptions = prismaClient.Consumption.map((consumption) => ({
+    itemId: consumption.item_id,
+    itemName: consumption.item?.name || "Unknown",
+    totalAmount: consumption.amount,
+    totalSpent: consumption.price,
+  }));
+
+  return { client,  consumptions };
+}
+
 }

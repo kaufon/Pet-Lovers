@@ -1,4 +1,7 @@
 export {ListTopSpendersUseCase} from "./list-top-spenders-use-case"
+export {GetClientUseCase} from "./get-client-use-case"
+export {ListMostConsumedByType} from "./list-top-consumed-by-type"
+export {ListMostConsumedByRace} from "./list-top-consumed-by-race"
 export {ListTopconsumersUseCase} from "./list-top-consumers-use-case"
 export {RegisterClientUseCase} from "./register-client-use-case"
 export {DeleteClientUseCase} from "./delete-client-use-case"
