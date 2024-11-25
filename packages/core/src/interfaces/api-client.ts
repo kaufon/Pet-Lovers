@@ -1,5 +1,11 @@
-import { ApiResponse } from "../responses/api-response";
+import type { ApiResponse } from "../responses/api-response";
 export interface IapiClient {
+  setHeader(key: string, value: string): void
+  setParam(key: string, value: string): void
+  multipart<ResponseBody>(
+    url: string,
+    body: FormData,
+  ): Promise<ApiResponse<ResponseBody>>;
   get<ResponseBody>(
     url: string,
     body?: unknown,
@@ -16,5 +22,5 @@ export interface IapiClient {
     url: string,
     body?: unknown,
   ): Promise<ApiResponse<ResponseBody>>;
-  setBaseUrl(url:string): void
+  setBaseUrl(url: string): void;
 }
