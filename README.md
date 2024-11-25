@@ -35,7 +35,7 @@ npm install
 Execute o seguinte comando dentro da pasta `apps/server`:
 
 ```bash
-npm run db:generate && npm run db:push
+npm run db:generate
 ```
 
 
