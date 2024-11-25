@@ -30,15 +30,12 @@ export class ApiResponse<Body> {
     return this._body;
   }
   get errorMessage(): string {
-    if (!this.errorMessage) {
-      throw new Error("ja era paizao");
+    if (!this._errorMessage) {
+    throw new Error("Error message is not available.");
     }
-    return this.errorMessage;
+    return this._errorMessage;
   }
   get statusCode(): number {
-    if (!this.statusCode) {
-      throw new Error("O numero não vdd");
-    }
     return this.statusCode;
   }
 }

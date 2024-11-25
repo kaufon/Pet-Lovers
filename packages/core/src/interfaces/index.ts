@@ -1,4 +1,5 @@
 export type { IServerApp } from "./server-app";
+export * from "./services"
 export * from './repositories'
 export type {IController} from './controller'
 export type { IapiClient } from "./api-client";

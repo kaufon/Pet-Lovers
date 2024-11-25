@@ -6,6 +6,7 @@ import { servicesRepository } from "apps/server/src/database";
 export class RegisterServiceController {
   async handle(http: IHttp) {
     const serviceDto = http.getBody<ItemDto>();
+    console.log(serviceDto)
     const useCase = new RegisterServiceUseCase(servicesRepository);
     const response = await useCase.execute({ serviceDto });
     return response;

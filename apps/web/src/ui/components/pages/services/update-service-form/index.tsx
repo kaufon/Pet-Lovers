@@ -1,3 +1,4 @@
+
 import {
   Button,
   Input,
@@ -8,19 +9,22 @@ import {
   ModalHeader,
 } from "@nextui-org/react";
 import React from "react";
-import { useRegisterServiceForm } from "./use-register-service-form";
+import { useUpdateServiceForm } from "./use-update-form";
+import type { Service } from "@core";
 
-interface RegisterServiceFormProps {
+interface UpdateServiceFormProps {
   onSubmit: VoidFunction;
   onCancel: VoidFunction;
+  service: Service
 }
 
-export const RegisterServiceForm = ({
+export const UpdateServiceForm = ({
   onSubmit,
   onCancel,
-}: RegisterServiceFormProps) => {
-  const { errors, isSubmiting, register, handleSubmit } =
-    useRegisterServiceForm({ onSubmit });
+  service
+}: UpdateServiceFormProps) => {
+  const { errors, isSubmiting, register, handleSubmit,isDirty } =
+    useUpdateServiceForm({ onSubmit,onCancel,service });
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-4">
@@ -42,7 +46,7 @@ export const RegisterServiceForm = ({
           />
         </div>
         <div className="flex flex-row gap-4 ">
-          <Button type="submit" color="primary" isLoading={isSubmiting}>
+          <Button type="submit" color="primary" isDisabled={!isDirty} isLoading={isSubmiting}>
             Criar Servico
           </Button>
           <Button

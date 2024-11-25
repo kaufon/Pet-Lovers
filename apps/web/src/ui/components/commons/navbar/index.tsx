@@ -18,8 +18,8 @@ import { Drawer } from "../drawer";
 
 export const NavBar = () => {
   return (
-    <NavBarRoot className="bg-white md:bg-sky-200  shadow-none md:shadow">
-      <NavbarContent className="hidden md:flex justify-center text-black gap-8">
+    <NavBarRoot className="bg-white md:bg-sky-200     shadow-none md:shadow">
+      <NavbarContent className="hidden md:flex md:w-full     text-black gap-8">
         <NavbarItem
           as={Link}
           href="/"
@@ -73,15 +73,6 @@ export const NavBar = () => {
               >
                 <House />
                 Home
-              </NavbarItem>
-              <NavbarItem
-                as={Link}
-                href="/pets"
-                className="font-black text-2xl flex items-center gap-2"
-                onClick={closeDrawer}
-              >
-                <PawPrint />
-                Pets
               </NavbarItem>
               <NavbarItem
                 as={Link}

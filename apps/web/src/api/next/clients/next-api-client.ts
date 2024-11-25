@@ -71,9 +71,11 @@ export const NextApiClient = (cacheConfig?: CacheConfig): IApiClient => {
       const response = await fetch(`${baseUrl}${addUrlParams(url, params)}`, {
         method: "DELETE",
         headers,
-        body: body ? JSON.stringify(body) : undefined,
+        body: JSON.stringify(body),
       });
-      const data = await response.json();
+      params = {};
+      const rawData = await response.text();
+      const data = rawData ? JSON.parse(rawData) : null;
 
       if (!response.ok) {
         return handleApiError(data, response.status);
@@ -84,7 +86,6 @@ export const NextApiClient = (cacheConfig?: CacheConfig): IApiClient => {
         statusCode: response.status,
       });
     },
-
     async multipart<ResponseBody>(url: string, body: FormData) {
       const response = await fetch(`${baseUrl}${addUrlParams(url, params)}`, {
         method: "POST",

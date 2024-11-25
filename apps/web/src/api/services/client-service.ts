@@ -1,13 +1,12 @@
-import type { IApiClient, IClientService } from "@core/interfaces";
-import type { CepAddress, ClientDto } from "@core/dtos";
+import type { IapiClient as IApiClient } from "@core";
 
 export const ClientsService = (apiClient: IApiClient): IClientService => {
   return {
     async listClients() {
       return await apiClient.get<ClientDto[]>("/cliente/clientes");
     },
-    async getClient(clientId:number){
-      return await apiClient.get<ClientDto>(`/cliente/${clientId}`)
+    async getClient(clientId: number) {
+      return await apiClient.get<ClientDto>(`/cliente/${clientId}`);
     },
     async updateClient(partialClientDto: Partial<ClientDto>, clientId: number) {
       return await apiClient.put("/cliente/atualizar", {

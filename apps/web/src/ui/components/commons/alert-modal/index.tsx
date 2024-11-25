@@ -1,54 +1,42 @@
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@nextui-org/react";
-import React from "react";
+"use client";
 
-interface AlertModalProps {
-  isOpen: boolean;
-  isClosed: VoidFunction
-  onConfirm: VoidFunction
-}
+import { type ForwardedRef, forwardRef, type ReactNode } from "react";
 
-export const AlertModal  = ({ isOpen, isClosed,onConfirm }:AlertModalProps) => {
+import { Dialog } from "../dialog";
+import type { DialogRef } from "../dialog/types/dialog-ref";
+import { Button, ModalFooter } from "@nextui-org/react";
+
+type AlertDialogProps = {
+  children: string;
+  trigger: ReactNode;
+  onConfirm: VoidFunction;
+};
+
+const AlertDialogComponent = (
+  { children, trigger, onConfirm }: AlertDialogProps,
+  ref: ForwardedRef<DialogRef>,
+) => {
   return (
-    <Modal isOpen={isOpen} onClose={isClosed}>
-      <ModalContent>
-        {(onClose) => (
-          <div>
-            <ModalHeader>
-              <div className="w-full flex justify-between items-center">
-                <h1>Você Tem certeza?</h1>
-              </div>
-            </ModalHeader>
-            <ModalBody>
-              <p>Essa é uma ação permanente e não poderá ser revertida.</p>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                color="danger"
-                className="text-red-600 bg-opacity-20"
-                onPress={onClose}
-              >
-                Cancelar
-              </Button>
-              <Button
-                color="success"
-                className="text-green-600 bg-opacity-20"
-                onPress={onConfirm}
-              >
-                Confirmar
-              </Button>
-            </ModalFooter>
-          </div>
-        )}
-      </ModalContent>
-    </Modal>
+    <Dialog ref={ref} title="Mensagem de alerta" trigger={trigger}>
+      {(closeDialog) => (
+        <>
+          <p className="text-lg text-zinc-600">{children}</p>
+          <ModalFooter className="p-0 justify-start mt-3 pb-3">
+            <Button onClick={closeDialog}>Cancelar</Button>
+            <Button
+              color="primary"
+              onClick={() => {
+                onConfirm();
+                closeDialog();
+              }}
+            >
+              Confirmar
+            </Button>
+          </ModalFooter>
+        </>
+      )}
+    </Dialog>
   );
 };
 
-
+export const AlertDialog = forwardRef(AlertDialogComponent);

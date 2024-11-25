@@ -1,5 +1,5 @@
 export const CACHE = {
-  client: {
-    key: "/cliente/clientes",
+  services: {
+    key: "/services",
   },
 };
