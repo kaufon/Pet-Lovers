@@ -9,13 +9,13 @@ type PageProps = {
   };
 };
 const Page = async ({ params }: PageProps) => {
-  const apiClient = NextApiClient({ isCacheEnabled: false });
-  apiClient.setBaseUrl("http://localhost:32831");
-  const clientService = ClientsService(apiClient);
-  const reponse = await clientService.getClient(params.clientId);
-  if (reponse.isFailure) {
+  // const apiClient = NextApiClient({ isCacheEnabled: false });
+  // apiClient.setBaseUrl("http://localhost:32831");
+  // const clientService = ClientsService(apiClient);
+  // const reponse = await clientService.getClient(params.clientId);
+  // if (reponse.isFailure) {
     return notFound();
-  }
-  return <ClientPage client={reponse.body} />;
+  // }
+  // return <ClientPage client={reponse.body} />;
 };
 export default Page;

@@ -1,71 +1,46 @@
 "use client";
-import {
-    Button,
-    Table,
-    TableBody,
-    TableCell,
-    TableColumn,
-    TableHeader,
-    TableRow,
-    Tooltip,
-} from "@nextui-org/react";
 import { Pen, Trash } from "lucide-react";
-import { useState } from "react";
-import { AlertModal } from "../../commons/alert-modal";
-import { RegisterProductForm } from "./register-product-formn";
+import React from "react";
+import { RegisterProductForm } from "./register-product-formn"; 
+import { ProductsTable } from "./products-table"; 
+import { useProductsPage } from "./use-products-page"; 
+import { Drawer } from "../../commons/drawer";
+import { Button } from "@nextui-org/button";
 
-export const ProductsPage = () => {
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [isAlertModalOpen, setAlertModalOpen] = useState(false);
-  const [isRegister, setIsRegister] = useState(true); 
-
-  const closeModal = () => setModalOpen(false);
-  const openModal = (isRegisterMode: boolean = true) => {
-    setModalOpen(true);
-    setIsRegister(isRegisterMode);
-  };
-
-  const openAlertModal = () => setAlertModalOpen(true);
-  const closeAlertModal = () => setAlertModalOpen(false);
+export const ProductsPage = () => { 
+  const {
+    products, 
+    isFetching,
+    handleUpdateProduct, 
+    handleRegisterProductFormSubmit, 
+    handleDeleteProductAlertDialogConfirm, 
+  } = useProductsPage(); 
 
   return (
     <>
-      <Button color="default" onClick={() => openModal(true)}>
-        Adicionar Produto
-      </Button>
-      <Table selectionMode="single" shadow="md">
-        <TableHeader>
-          <TableColumn>ID</TableColumn>
-          <TableColumn>Nome</TableColumn>
-          <TableColumn>Preço</TableColumn>
-          <TableColumn>Ações</TableColumn>
-        </TableHeader>
-        <TableBody>
-          <TableRow>
-            <TableCell>ID do produto</TableCell>
-            <TableCell>Nome do produto</TableCell>
-            <TableCell>Preço do produto</TableCell>
-            <TableCell>
-              <div className="flex flex-row gap-3 text-zinc-400">
-                <Tooltip content="Editar">
-                  <Pen onClick={() => openModal(false)} />
-                </Tooltip>
-                <Tooltip content="Deletar">
-                  <Trash onClick={openAlertModal} />
-                </Tooltip>
-              </div>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-      <RegisterProductForm
-        isOpen={isModalOpen}
-        isClosed={closeModal}
-        isRegister={isRegister} // Passing the register/update mode
-      />
-      <AlertModal isOpen={isAlertModalOpen} isClosed={closeAlertModal} />
+      <div className="space-y-4">
+        <div className="flex w-full items-center p-4 justify-center">
+          <Drawer trigger={<Button color="primary" size="lg" radius="lg" className="w-60">Adicionar Produto</Button>}>
+            {(closeDrawer) => (
+              <RegisterProductForm
+                onSubmit={async () => {
+                  await handleRegisterProductFormSubmit();
+                  closeDrawer();
+                }}
+                onCancel={closeDrawer}
+              />
+            )}
+          </Drawer>
+        </div>
+        
+        <ProductsTable
+          handleDeleteProduct={handleDeleteProductAlertDialogConfirm} 
+          isLoading={isFetching}
+          products={products} 
+          onUpdateProduct={handleUpdateProduct} 
+        />
+      </div>
     </>
   );
 };
-
 

@@ -1,4 +1,4 @@
-import type { ClientDto } from "@core/dtos";
+import type { ClientDto } from "@core";
 import { Input } from "@nextui-org/input";
 
 type ClientPageProps = {

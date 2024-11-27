@@ -1,24 +1,28 @@
-import type { IapiClient as IApiClient } from "@core";
+import type {
+  IClientsService,
+  IapiClient,
+  PaginationResponse,
+  ApiResponse,
+  ClientDto,
+} from "@core"; // Adjust based on your project structure
 
-export const ClientsService = (apiClient: IApiClient): IClientService => {
+export const ClientsService = (apiClient: IapiClient): IClientsService => {
   return {
     async listClients() {
-      return await apiClient.get<ClientDto[]>("/cliente/clientes");
+      return await apiClient.get<PaginationResponse<ClientDto>>("/clients");
     },
-    async getClient(clientId: number) {
-      return await apiClient.get<ClientDto>(`/cliente/${clientId}`);
+    async registerClient(client: ClientDto) {
+      return await apiClient.post<void>("/clients", client);
     },
-    async updateClient(partialClientDto: Partial<ClientDto>, clientId: number) {
-      return await apiClient.put("/cliente/atualizar", {
-        id: clientId,
-        ...partialClientDto,
-      });
+    async updateClient(partialClientDto: Partial<ClientDto>, clientId: string) {
+      return await apiClient.put<void>(
+        `/clients/${clientId}`,
+        partialClientDto,
+      );
     },
-    async deleteClient(userId: number) {
-      return await apiClient.delete("/cliente/excluir", { id: userId });
-    },
-    async registerClient(user: ClientDto) {
-      return await apiClient.post("/cliente/cadastrar", user);
+
+    async deleteClient(clientId: string) {
+      return await apiClient.delete("/clients", { clientId: clientId });
     },
   };
 };

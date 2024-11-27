@@ -1,33 +1,33 @@
-import { Service } from "@core";
+import { Product } from "@core";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { nameSchema, priceSchema } from "@validation/src/schemas";
 import { useApi } from "apps/web/src/ui/hooks/use-api";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-export const registerServiceFormSchema = z.object({
+export const registerProductFormSchema = z.object({
   name: nameSchema,
   price: priceSchema,
 });
-type RegisterServiceFormData = z.infer<typeof registerServiceFormSchema>;
-type useRegisterServiceFormProps = {
+type RegisterProductFormData = z.infer<typeof registerProductFormSchema>;
+type useRegisterProductFormProps = {
   onSubmit: VoidFunction;
 };
-export function useRegisterServiceForm({
+export function useRegisterProductForm({
   onSubmit,
-}: useRegisterServiceFormProps) {
+}: useRegisterProductFormProps) {
   const { register, formState, reset, handleSubmit } =
-    useForm<RegisterServiceFormData>({
-      resolver: zodResolver(registerServiceFormSchema),
+    useForm<RegisterProductFormData>({
+      resolver: zodResolver(registerProductFormSchema),
     });
-  const { servicesService } = useApi();
-  async function handleFormSubmit(formData: RegisterServiceFormData) {
-    const service = Service.create({
+  const { productsService } = useApi();
+  async function handleFormSubmit(formData: RegisterProductFormData) {
+    const product = Product.create({
       name: formData.name,
       price: formData.price,
-      type: "SERVICE",
+      type: "PRODUCT",
     });
-    const response = await servicesService.registerService(service);
+    const response = await productsService.registerProduct(product);
     if (response.isFailure) {
       throw new Error(response.errorMessage);
     }
@@ -39,8 +39,9 @@ export function useRegisterServiceForm({
   }
   return {
     errors: formState.errors,
-    isSubmiting: formState.isSubmitting,
+    isSubmitting: formState.isSubmitting,
     register,
     handleSubmit: handleSubmit(handleFormSubmit),
   };
 }
+

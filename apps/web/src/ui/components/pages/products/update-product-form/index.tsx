@@ -8,19 +8,23 @@ import {
   ModalHeader,
 } from "@nextui-org/react";
 import React from "react";
-import { useRegisterProductForm } from "./use-register-product-form";
+import { useUpdateProductForm } from "./use-update-product-form";
+import type { Product } from "@core";
 
-interface RegisterProductFormProps {
+interface UpdateProductFormProps {
   onSubmit: VoidFunction;
   onCancel: VoidFunction;
+  product: Product;
 }
 
-export const RegisterProductForm = ({
+export const UpdateProductForm = ({
   onSubmit,
   onCancel,
-}: RegisterProductFormProps) => {
-  const { errors, isSubmitting, register, handleSubmit } =
-    useRegisterProductForm({ onSubmit });
+  product,
+}: UpdateProductFormProps) => {
+  const { errors, isSubmitting, register, handleSubmit, isDirty } =
+    useUpdateProductForm({ onSubmit, onCancel, product });
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-4">
@@ -28,7 +32,7 @@ export const RegisterProductForm = ({
           <Input
             {...register("name")}
             label="Nome"
-            placeholder="Produto A"
+            placeholder="Produto exemplo"
             isInvalid={Boolean(errors.name)}
             errorMessage={errors.name?.message}
           />
@@ -41,9 +45,14 @@ export const RegisterProductForm = ({
             errorMessage={errors.price?.message}
           />
         </div>
-        <div className="flex flex-row gap-4 ">
-          <Button type="submit" color="primary" isLoading={isSubmitting}>
-            Criar Produto
+        <div className="flex flex-row gap-4">
+          <Button
+            type="submit"
+            color="primary"
+            isDisabled={!isDirty}
+            isLoading={isSubmitting}
+          >
+            Atualizar Produto
           </Button>
           <Button
             color="danger"

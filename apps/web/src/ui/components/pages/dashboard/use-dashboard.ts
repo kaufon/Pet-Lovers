@@ -3,6 +3,7 @@ import { CACHE } from "apps/web/src/constants";
 import { useApi } from "../../../hooks/use-api";
 import { useCache } from "../../../hooks/use-cache";
 import { useState } from "react";
+import { Client } from "@core";
 
 export function useDashboard() {
   const { clientService } = useApi();
@@ -15,20 +16,28 @@ export function useDashboard() {
   }
   const { data, refetch, isFetching } = useCache({
     fetcher: fetchClients,
-    refreshInterval: 3000,
-    key: CACHE.client.key,
+    key: CACHE.clients.key,
   });
-  async function deleteClient(clientId: number) {
+  const clients = data ? data.items.map((client) => Client.create(client)) : [];
+  const itemsCount = data ? data.itemCount : 0;
+  async function handleRegisterClientFormSubmit(){
+    refetch()
+  }
+  async function handleUpdateClient(){
+    refetch()
+  }
+  async function handleDeleteClient(clientId: string) {
     const response = await clientService.deleteClient(clientId);
     if (response.isFailure) {
       throw new Error(response.errorMessage);
     }
     refetch();
   }
-  const clients = data ? data : [];
   return {
+    isFetching,
     clients,
-    deleteClient,
-    isLoading: isFetching,
+    handleDeleteClient,
+    handleUpdateClient,
+    handleRegisterClientFormSubmit,
   };
 }

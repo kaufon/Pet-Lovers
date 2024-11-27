@@ -36,7 +36,6 @@ export function useRegisterClientForm(onSubmit:VoidFunction) {
   async function addressByCep(cep: string) {
     const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
     const data = await response.json();
-    console.log(data)
     if (data.erro) {
       setCepError("Cep Inexistente");
       return null;

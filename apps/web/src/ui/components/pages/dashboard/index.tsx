@@ -7,7 +7,13 @@ import { useDashboard } from "./use-dashboard";
 import { Drawer } from "../../commons/drawer";
 
 export const DashBoardPage = () => {
-  const { clients, isLoading, deleteClient } = useDashboard();
+  const {
+    clients,
+    isFetching,
+    handleRegisterClientFormSubmit,
+    handleUpdateClient,
+    handleDeleteClient,
+  } = useDashboard();
   const [isModalOpen, setModalOpen] = useState(false);
   const [isConsumeModalOpen, setConsumeModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -21,8 +27,9 @@ export const DashBoardPage = () => {
         <div className="flex flex-col">
           <ClientTable
             clients={clients}
-            isLoading={isLoading}
-            handleDeleteClient={deleteClient}
+            isLoading={isFetching}
+            handleDeleteClient={handleDeleteClient}
+            onUpdateClient={handleUpdateClient}
           />
         </div>
       </div>

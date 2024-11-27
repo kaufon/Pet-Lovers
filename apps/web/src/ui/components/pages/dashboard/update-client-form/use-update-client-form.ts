@@ -61,13 +61,11 @@ export function useUpdateClientForm({
       }
     }
 
-    console.log("Payload to send:", partialClient);
 
     const response = await clientService.updateClient(
       partialClient as Partial<ClientDto>,
       client.id || -1,
     );
-    console.log(response);
 
     if (response.isFailure) {
       throw new Error(response.errorMessage);
@@ -80,7 +78,6 @@ export function useUpdateClientForm({
   async function addressByCep(cep: string) {
     const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
     const data = await response.json();
-    console.log(data);
     if (data.erro) {
       setCepError("Cep Inexistente");
       return null;

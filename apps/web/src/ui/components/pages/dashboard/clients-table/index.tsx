@@ -1,5 +1,6 @@
-import type { ClientDto } from "@core/src/dto";
 import {
+  Button,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -11,106 +12,83 @@ import {
 import { EyeIcon, Pen, Trash } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { AlertModal } from "../../../commons/alert-modal";
-import { Drawer } from "../../../commons/drawer";
 import type { DrawerRef } from "../../../commons/drawer/types/drawer-ref";
-import { UpdateClientForm } from "../update-client-form";
 import { useClientTable } from "./use-client-table";
+import type { Client } from "@core";
+import { AlertDialog } from "../../../commons/alert-modal";
 
 type ClientTableProps = {
   isLoading: boolean;
-  clients: ClientDto[];
-  handleDeleteClient: (clientId: number) => Promise<void>;
+  clients: Client[];
+  onUpdateClient?: VoidFunction;
+  handleDeleteClient: (clientId: string) => void;
 };
 export const ClientTable = ({
+  onUpdateClient,
   isLoading,
   clients,
   handleDeleteClient,
 }: ClientTableProps) => {
   const drawerRef = useRef<DrawerRef>(null);
-  const {
-    handleClientDeleteSelection,
-    clientBeingDeleted,
-    clientBeingEditted,
-    handleClientEditSelection,
-    handleDrawerClose,
-    handleClientEditFormSubmit,
-    handleCancelEditting,
-  } = useClientTable({ drawerRef });
-  const [isAlertModalOpen, setAlertModalOpen] = useState(false);
-  const openAlertModal = () => setAlertModalOpen(true);
-  const closeAlertModal = () => setAlertModalOpen(false);
-
   return (
     <>
       <Table aria-label="Banana" selectionMode="none" shadow="md">
         <TableHeader>
           <TableColumn>Nome</TableColumn>
           <TableColumn>Nome Social</TableColumn>
-          <TableColumn>Email</TableColumn>
-          <TableColumn>Endereços</TableColumn>
+          <TableColumn>CPF</TableColumn>
+          <TableColumn>Pets</TableColumn>
+          <TableColumn>Rgs</TableColumn>
           <TableColumn>Telefones</TableColumn>
-          <TableColumn>Ações</TableColumn>
+          <TableColumn className="text-center">Acoes</TableColumn>
         </TableHeader>
-        <TableBody items={clients} isLoading={isLoading}>
+        <TableBody
+          items={clients}
+          isLoading={isLoading}
+          loadingContent={<Spinner color="primary" label="Carregando..." />}
+          emptyContent="Nenhum cliente cadastrado"
+        >
           {(client) => (
             <TableRow key={client.id}>
-              <TableCell> {client.nome}</TableCell>
-              <TableCell> {client.nomeSocial}</TableCell>
+              <TableCell> {client.name}</TableCell>
+              <TableCell> {client.socialName}</TableCell>
+              <TableCell>{client.cpf.value}</TableCell>
               <TableCell>
-                {" "}
-                {client.email ? client.email : "Nenhum email cadastrado"}
+                {client.pets.length > 0
+                  ? client.pets.map((pet) => <div key={pet.id}>{pet.name}</div>)
+                  : "Nenhum Pet registrado"}
               </TableCell>
               <TableCell>
-                <div key={client.endereco.id}>
-                  {client.endereco.rua}, {client.endereco.numero},{" "}
-                  {client.endereco.cidade}, {client.endereco.estado},{" "}
-                </div>
+                {client.rgs.length > 0
+                  ? client.rgs.map((rg) => <div key={rg.value}>{rg.value}</div>)
+                  : "Nenhum Pet registrado"}
               </TableCell>
+
               <TableCell>
-                {client.telefones.length > 0
-                  ? client.telefones.map((cell) => (
-                    <div key={cell.id}>
-                      {cell.ddd}-{cell.numero}
-                    </div>
+                {client.phones.length > 0
+                  ? client.phones.map((cell) => (
+                    <div key={cell.number}>{cell.value}</div>
                   ))
                   : "Nenhum telefone registrado"}
               </TableCell>
-              <TableCell>
-                <div className="flex flex-row gap-3 text-zinc-400">
-                  <Tooltip content="Editar">
-                    <Pen onClick={() => handleClientEditSelection(client)} />
-                  </Tooltip>
-                  <Tooltip content="Ver cliente">
-                    <Link href={`/${client.id}`}>
-                      <EyeIcon />
-                    </Link>
-                  </Tooltip>
-
-                  <Tooltip content="Deletar">
-                    <Trash
-                      onClick={() => {
-                        handleClientDeleteSelection(client);
-                        openAlertModal();
-                      }}
-                    />
-                  </Tooltip>
-                </div>
+              <TableCell className="flex items-center justify-center">
+                <AlertDialog
+                  trigger={
+                    <Button className="bg-transparent hover:bg-sky-400 text-gray-400 hover:text-red-50 hover:transition-all transition-all duration-100 border-zinc-400 min-w-10">
+                      <Trash size={25} />
+                    </Button>
+                  }
+                  onConfirm={() => {
+                    handleDeleteClient(client.id || "");
+                  }}
+                >
+                  Voce tem certeza?
+                </AlertDialog>
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
-      <AlertModal
-        isOpen={isAlertModalOpen}
-        isClosed={closeAlertModal}
-        onConfirm={async () => {
-          if (clientBeingDeleted?.id !== undefined) {
-            await handleDeleteClient(clientBeingDeleted.id);
-          }
-          closeAlertModal();
-        }}
-      />
     </>
   );
 };
