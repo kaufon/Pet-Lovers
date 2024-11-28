@@ -4,7 +4,7 @@
 
 Antes de começar, certifique-se de que você tem o seguinte instalado em sua máquina Windows:
 
-1. **Node.js**: Baixe e instale o Node.js a partir de [nodejs.org](https://nodejs.org/). Isso também instalará o npm (Node Package Manager).
+1. **Node.js(v18.17.0 ou acima)**: Baixe e instale o Node.js a partir de [nodejs.org](https://nodejs.org/). Isso também instalará o npm (Node Package Manager).
 2. **Git**: Baixe e instale o Git a partir de [git-scm.com](https://git-scm.com/).
 
 ### Passo 1: Clonar o Repositório
