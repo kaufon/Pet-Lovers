@@ -1,3 +1,4 @@
+import { Client } from "../../domain";
 import type { ClientDto } from "../../dto";
 import type { IClientsRepository } from "../../interfaces/repositories";
 import { ApiResponse } from "../../responses/api-response";
@@ -20,6 +21,8 @@ export class GetClientUseCase {
   async execute({ clientId }: Request) {
     const response = await this.clientRepository.getClientDetails(clientId);
     if (!response) throw new Error("not found");
-    return new ApiResponse<Response>({ body: response, statusCode: 200 });
+    const client = response.client?.dto;
+    const consumptions = response.consumptions;
+    return { client, consumptions };
   }
 }
