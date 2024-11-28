@@ -1,4 +1,5 @@
 "use client";
+import React, { useState, useEffect } from "react";
 import {
   Select,
   SelectItem,
@@ -9,33 +10,87 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/react";
-import React, { useState } from "react";
+import { useListsPage } from "./use-lists-page";
 
 export const ListsPage = () => {
   const [selectedList, setSelectedList] = useState<string>("");
+  const [data, setData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const {
+    fetchConsumers,
+    fetchSpenders,
+    fetchTop10ConsumersByType,
+    fetchTop10ConsumersByRace,
+    fetchMostConsumedItems,
+  } = useListsPage();
 
-  const handleSelectChange = (value: string) => {
+  const handleSelectChange = async (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    const value = event.target.value;
     setSelectedList(value);
+    setIsLoading(true);
+    let fetcher;
+
+    switch (value) {
+      case "mostwanted":
+        fetcher = fetchMostConsumedItems;
+        break;
+      case "top5":
+        fetcher = fetchSpenders;
+        break;
+      case "top10":
+        fetcher = fetchConsumers;
+        break;
+      case "perRace":
+        fetcher = fetchTop10ConsumersByRace;
+        break;
+      case "perType":
+        fetcher = fetchTop10ConsumersByType;
+        break;
+      default:
+        setData([]);
+        setIsLoading(false);
+        return;
+    }
+
+    try {
+      const result = await fetcher();
+      setData(result);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setData([]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const renderTable = () => {
+    if (isLoading) {
+      return <p>Loading...</p>;
+    }
+
+    if (data.length === 0) {
+      return <p>No data available.</p>;
+    }
+
     switch (selectedList) {
       case "mostwanted":
         return (
           <Table aria-label="Produtos Mais Consumidos">
             <TableHeader>
-              <TableColumn>Produto</TableColumn>
+              <TableColumn>Item</TableColumn>
               <TableColumn>Quantidade Consumida</TableColumn>
+              <TableColumn>Tipo do item</TableColumn>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>Produto A</TableCell>
-                <TableCell>100</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Produto B</TableCell>
-                <TableCell>80</TableCell>
-              </TableRow>
+              {data.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.amount}</TableCell>
+                  <TableCell>{item.type}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         );
@@ -47,14 +102,12 @@ export const ListsPage = () => {
               <TableColumn>Valor Gasto</TableColumn>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>Cliente 1</TableCell>
-                <TableCell>R$ 500</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Cliente 2</TableCell>
-                <TableCell>R$ 450</TableCell>
-              </TableRow>
+              {data.map((client, index) => (
+                <TableRow key={index}>
+                  <TableCell>{client.name}</TableCell>
+                  <TableCell>{client.totalSpended}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         );
@@ -66,14 +119,12 @@ export const ListsPage = () => {
               <TableColumn>Quantidade Consumida</TableColumn>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>Cliente A</TableCell>
-                <TableCell>20</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Cliente B</TableCell>
-                <TableCell>15</TableCell>
-              </TableRow>
+              {data.map((client, index) => (
+                <TableRow key={index}>
+                  <TableCell>{client.name}</TableCell>
+                  <TableCell>{client.totalItems}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         );
@@ -82,17 +133,17 @@ export const ListsPage = () => {
           <Table aria-label="Mais Consumido por Raça">
             <TableHeader>
               <TableColumn>Raça</TableColumn>
-              <TableColumn>Produto Mais Consumido</TableColumn>
+              <TableColumn>Item </TableColumn>
+              <TableColumn>Quantia Consumida </TableColumn>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>Raça A</TableCell>
-                <TableCell>Produto X</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Raça B</TableCell>
-                <TableCell>Produto Y</TableCell>
-              </TableRow>
+              {data.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.petRace}</TableCell>
+                  <TableCell>{item.productName}</TableCell>
+                  <TableCell>{item.totalAmount}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         );
@@ -102,16 +153,16 @@ export const ListsPage = () => {
             <TableHeader>
               <TableColumn>Tipo de Pet</TableColumn>
               <TableColumn>Produto Mais Consumido</TableColumn>
+              <TableColumn>Quantia Consumida </TableColumn>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>Cachorro</TableCell>
-                <TableCell>Ração A</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Gato</TableCell>
-                <TableCell>Ração B</TableCell>
-              </TableRow>
+              {data.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.petType}</TableCell>
+                  <TableCell>{item.productName}</TableCell>
+                  <TableCell>{item.totalAmount}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         );
@@ -122,10 +173,7 @@ export const ListsPage = () => {
 
   return (
     <>
-      <Select
-        label="Selecione a listagem"
-        onChange={(e) => handleSelectChange(e.target.value)}
-      >
+      <Select label="Selecione a listagem" onChange={handleSelectChange}>
         <SelectItem key="mostwanted">Produtos Mais Consumidos</SelectItem>
         <SelectItem key="top5">Top 5 Clientes que Mais Gastaram</SelectItem>
         <SelectItem key="top10">Top 10 Clientes que Mais Consumiram</SelectItem>
