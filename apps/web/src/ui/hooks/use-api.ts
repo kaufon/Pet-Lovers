@@ -1,5 +1,5 @@
 import { NextServerApiClient } from "../../api/next/clients";
-import { ClientsService, ProductsService, ServicesService } from "../../api/services";
+import { ClientsService, ConsumptionsService, ProductsService, ServicesService } from "../../api/services";
 
 const nextApiClient = NextServerApiClient();
 
@@ -8,6 +8,7 @@ export function useApi() {
   return {
 
     clientService: ClientsService(nextApiClient),
+    consumptionsService: ConsumptionsService(nextApiClient),
     servicesService: ServicesService(nextApiClient),
     productsService: ProductsService(nextApiClient)
   };
