@@ -186,11 +186,11 @@ export const RegisterClientForm = ({
           ))}
         </div>
         <div className="gap-5 flex flex-row">
-          <Button color="danger" onPress={onCancel}>
-            Cancelar
-          </Button>
           <Button type="submit" color="primary">
             Confirmar
+          </Button>
+          <Button color="danger" onPress={onCancel}>
+            Cancelar
           </Button>
         </div>
       </form>

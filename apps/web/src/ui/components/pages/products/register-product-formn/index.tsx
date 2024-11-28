@@ -43,7 +43,7 @@ export const RegisterProductForm = ({
         </div>
         <div className="flex flex-row gap-4 ">
           <Button type="submit" color="primary" isLoading={isSubmitting}>
-            Criar Produto
+             Confirmar
           </Button>
           <Button
             color="danger"

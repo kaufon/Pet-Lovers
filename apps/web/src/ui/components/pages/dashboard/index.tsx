@@ -23,7 +23,7 @@ export const DashBoardPage = () => {
       <div className="space-y-5 p-5">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold">Bem vindo ao Pet Lovers!</h1>
-          <Drawer trigger={<Button color="primary">Adicionar Client</Button>}>
+          <Drawer trigger={<Button color="primary">Adicionar cliente</Button>}>
             {(closeDrawer) => (
               <RegisterClientForm
                 onCancel={closeDrawer}

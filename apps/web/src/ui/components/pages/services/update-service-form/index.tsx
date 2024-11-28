@@ -47,7 +47,7 @@ export const UpdateServiceForm = ({
         </div>
         <div className="flex flex-row gap-4 ">
           <Button type="submit" color="primary" isDisabled={!isDirty} isLoading={isSubmiting}>
-            Criar Servico
+             Confirmar
           </Button>
           <Button
             color="danger"

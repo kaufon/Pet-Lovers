@@ -50,13 +50,13 @@ export const ServicesTable = ({
         selectionMode="none"
       >
         <TableHeader>
-          <TableColumn key="name">NOME</TableColumn>
-          <TableColumn key="price">PREÇO</TableColumn>
+          <TableColumn key="name">Nome</TableColumn>
+          <TableColumn key="price">Preco</TableColumn>
           <TableColumn
             key="actions"
             className="flex justify-center items-center"
           >
-            ACOES
+            Acoes
           </TableColumn>
         </TableHeader>
         <TableBody

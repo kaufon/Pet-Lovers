@@ -58,7 +58,7 @@ export const ListsPage = () => {
       const result = await fetcher();
       setData(result);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Erro,tente novamente", error);
       setData([]);
     } finally {
       setIsLoading(false);
@@ -67,11 +67,11 @@ export const ListsPage = () => {
 
   const renderTable = () => {
     if (isLoading) {
-      return <p>Loading...</p>;
+      return <p>Carregando...</p>;
     }
 
     if (data.length === 0) {
-      return <p>No data available.</p>;
+      return <p>Nenhum dado disponivel.</p>;
     }
 
     switch (selectedList) {
