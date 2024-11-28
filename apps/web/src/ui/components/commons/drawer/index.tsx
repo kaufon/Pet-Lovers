@@ -1,10 +1,11 @@
 import { type ForwardedRef, forwardRef, type ReactNode, useImperativeHandle } from "react";
 import { Slot } from "@radix-ui/react-slot";
 import RmDrawer from "react-modern-drawer";
-import "react-modern-drawer/dist/index.css"
+import "react-modern-drawer/dist/index.css";
 import { useDrawer } from "./use-drawer";
 import type { DrawerRef } from "./types/drawer-ref";
 import { X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type DrawerProps = {
   children: (closeDrawer: VoidFunction) => ReactNode;
@@ -14,6 +15,7 @@ type DrawerProps = {
   onOpen?: VoidFunction;
   onClose?: VoidFunction;
 };
+
 export const DrawerComponent = (
   {
     children,
@@ -26,6 +28,24 @@ export const DrawerComponent = (
   ref: ForwardedRef<DrawerRef>,
 ) => {
   const { open, close, isOpen } = useDrawer(onOpen, onClose);
+  const [drawerSize, setDrawerSize] = useState<string>("100%");
+
+  // Adjust the size based on screen width
+  useEffect(() => {
+    const updateSize = () => {
+      if (window.innerWidth >= 768) {
+        setDrawerSize("70%");
+      } else {
+        setDrawerSize("100%");
+      }
+    };
+
+    updateSize(); // Set the initial size
+    window.addEventListener("resize", updateSize);
+
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
   useImperativeHandle(
     ref,
     () => {
@@ -36,14 +56,15 @@ export const DrawerComponent = (
     },
     [close, open],
   );
+
   return (
     <>
       <RmDrawer
         open={isOpen}
         onClose={close}
-        size="70%"
+        size={drawerSize}
         direction={direction}
-        zIndex={999999}
+        zIndex={9999}
       >
         <div className="p-6 pb-12 h-full overflow-y-auto">
           <div className="ml-auto w-max">
@@ -56,4 +77,6 @@ export const DrawerComponent = (
     </>
   );
 };
-export const Drawer = forwardRef(DrawerComponent)
+
+export const Drawer = forwardRef(DrawerComponent);
+
