@@ -9,27 +9,48 @@ import {
   TableRow,
   Tooltip,
 } from "@nextui-org/react";
-import { EyeIcon, Pen, Trash } from "lucide-react";
+import { DollarSign, Eye, EyeIcon, Pen, Trash, View } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import type { DrawerRef } from "../../../commons/drawer/types/drawer-ref";
 import { useClientTable } from "./use-client-table";
 import type { Client } from "@core";
 import { AlertDialog } from "../../../commons/alert-modal";
+import { UpdateClientForm } from "../update-client-form";
+import { Drawer } from "../../../commons/drawer";
+import { RegisterClientForm } from "../register-client-form";
+import { ConsumeItemForm } from "../consume-item-form";
 
 type ClientTableProps = {
   isLoading: boolean;
   clients: Client[];
-  onUpdateClient?: VoidFunction;
+  onUpdateClients?: VoidFunction;
   handleDeleteClient: (clientId: string) => void;
 };
 export const ClientTable = ({
-  onUpdateClient,
+  onUpdateClients,
   isLoading,
   clients,
   handleDeleteClient,
 }: ClientTableProps) => {
   const drawerRef = useRef<DrawerRef>(null);
+  const consumerRef = useRef<DrawerRef>(null);
+  const {
+    clientBeingEditted,
+    handleClientEditSelection,
+    handleDrawerClose,
+    handleCancelEditting,
+    handleClientEditFormSubmit,
+    clientConsuming,
+    handleConsumeFormSubmit,
+    handleClientConsuming,
+    handleCancelConsuming,
+  } = useClientTable({
+    clients,
+    consumerRef,
+    onUpdateClients,
+    drawerRef,
+  });
   return (
     <>
       <Table aria-label="Banana" selectionMode="none" shadow="md">
@@ -55,13 +76,15 @@ export const ClientTable = ({
               <TableCell>{client.cpf.value}</TableCell>
               <TableCell>
                 {client.pets.length > 0
-                  ? client.pets.map((pet) => <div key={pet.id}>{pet.name}</div>)
+                  ? client.pets.map((pet) => (
+                    <div key={pet.dto.id}>{pet.name}</div>
+                  ))
                   : "Nenhum Pet registrado"}
               </TableCell>
               <TableCell>
                 {client.rgs.length > 0
                   ? client.rgs.map((rg) => <div key={rg.value}>{rg.value}</div>)
-                  : "Nenhum Pet registrado"}
+                  : "Nenhum Rg registrado"}
               </TableCell>
 
               <TableCell>
@@ -84,11 +107,48 @@ export const ClientTable = ({
                 >
                   Voce tem certeza?
                 </AlertDialog>
+                <Button
+                  className="bg-transparent hover:bg-sky-400 text-gray-400 hover:text-red-50 hover:transition-all transition-all duration-100 border-zinc-400 min-w-10"
+                  onClick={() => handleClientEditSelection(client)}
+                >
+                  <Pen size={25} />
+                </Button>
+                <Button
+                  onClick={() => handleClientConsuming(client.id)}
+                  className="bg-transparent hover:bg-sky-400 text-gray-400 hover:text-red-50 hover:transition-all transition-all duration-100 border-zinc-400 min-w-10"
+                >
+                  <DollarSign size={25} />
+                </Button>
+                <Button as={Link} className="bg-transparent hover:bg-sky-400 text-gray-400 hover:text-red-50 hover:transition-all transition-all duration-100 border-zinc-400 min-w-10" href={`/${client.id}`}>
+                  <Eye size={25}/>
+                </Button>
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
+      <Drawer trigger={null} ref={drawerRef}>
+        {() =>
+          clientBeingEditted && (
+            <UpdateClientForm
+              onSubmit={handleClientEditFormSubmit}
+              onCancel={handleCancelEditting}
+              client={clientBeingEditted}
+            />
+          )
+        }
+      </Drawer>
+      <Drawer trigger={null} ref={consumerRef}>
+        {() =>
+          clientConsuming && (
+            <ConsumeItemForm
+              onSubmit={handleConsumeFormSubmit}
+              onCancel={handleCancelConsuming}
+              clientId={clientConsuming}
+            />
+          )
+        }
+      </Drawer>
     </>
   );
 };

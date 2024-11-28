@@ -23,13 +23,24 @@ export const DashBoardPage = () => {
       <div className="space-y-5 p-5">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold">Bem vindo ao Pet Lovers!</h1>
+          <Drawer trigger={<Button color="primary">Adicionar Client</Button>}>
+            {(closeDrawer) => (
+              <RegisterClientForm
+                onCancel={closeDrawer}
+                onSubmit={async () => {
+                  await handleRegisterClientFormSubmit();
+                  closeDrawer();
+                }}
+              />
+            )}
+          </Drawer>
         </div>
         <div className="flex flex-col">
           <ClientTable
             clients={clients}
             isLoading={isFetching}
             handleDeleteClient={handleDeleteClient}
-            onUpdateClient={handleUpdateClient}
+            onUpdateClients={handleUpdateClient}
           />
         </div>
       </div>

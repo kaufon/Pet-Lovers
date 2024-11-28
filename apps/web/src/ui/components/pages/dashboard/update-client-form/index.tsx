@@ -1,12 +1,12 @@
-import type { CepAddress, ClientDto } from "@core/dtos";
-import { Button, Input } from "@nextui-org/react";
+import type { Client } from "@core";
+import { Button, Divider, Input } from "@nextui-org/react";
 import { useState } from "react";
 import { useUpdateClientForm } from "./use-update-client-form";
 
 interface UpdateClientFormProps {
   onCancel: VoidFunction;
   onSubmit: VoidFunction;
-  client: ClientDto;
+  client: Client;
 }
 
 export const UpdateClientForm = ({
@@ -14,17 +14,23 @@ export const UpdateClientForm = ({
   onSubmit,
   client,
 }: UpdateClientFormProps) => {
-  const [address, setAddress] = useState<CepAddress | null>(null);
   const [isCepRegistered, setIsCepRegistered] = useState(false);
   const {
     register,
     handleSubmit,
     isDirty,
     error,
-    addressByCep,
-    cepError,
-    setValue,
-  } = useUpdateClientForm({ client, onSubmit });
+    petsFieldArray: { fields: petFields, append: appendPet, remove: removePet },
+    rgsFieldArray: { fields: rgsFields, append: appendRg, remove: removeRg },
+    phonesFieldArray: {
+      fields: phonesFields,
+      append: appendPhone,
+      remove: removePhone,
+    },
+  } = useUpdateClientForm({
+    client,
+    onSubmit,
+  });
 
   return (
     <>
@@ -37,130 +43,162 @@ export const UpdateClientForm = ({
         <div className="grid grid-cols-2 gap-5">
           <Input
             label="Nome"
-            {...register("nome")}
-            errorMessage={error?.nome?.message}
-            isInvalid={Boolean(error.nome)}
+            {...register("name")}
+            errorMessage={error?.name?.message}
+            isInvalid={Boolean(error.name)}
           />
           <Input
             label="Nome Social"
-            {...register("nomeSocial")}
-            errorMessage={error.nomeSocial?.message}
-            isInvalid={Boolean(error.nomeSocial)}
-          />
-        </div>
-        <div className="grid grid-rows-1">
-          <Input
-            label="E-mail"
-            {...register("email")}
-            errorMessage={error.email?.message}
-            isInvalid={Boolean(error.email)}
+            {...register("socialName")}
+            errorMessage={error.socialName?.message}
+            isInvalid={Boolean(error.socialName)}
           />
         </div>
         <div className="grid grid-cols-2 gap-5">
           <Input
-            type="number"
-            label="CEP"
-            {...register("endereco.codigoPostal")}
-            isInvalid={Boolean(cepError)}
-            errorMessage={cepError}
-            onChange={async (e) => {
-              const cepValue = e.target.value;
-              setValue("endereco.codigoPostal", cepValue, {
-                shouldDirty: true,
-              });
-              if (cepValue.length === 8) {
-                const addressData = await addressByCep(cepValue);
-                if (addressData) {
-                  setAddress(addressData);
-
-                  setValue("endereco.estado", addressData.estado);
-                  setValue("endereco.cidade", addressData.localidade);
-                  setValue("endereco.bairro", addressData.bairro);
-                  setValue("endereco.rua", addressData.logradouro);
-                  setIsCepRegistered(true);
-                }
+            label="Valor do Cpf"
+            {...register("cpf.value")}
+            errorMessage={error.cpf?.value?.message}
+            isInvalid={Boolean(error.cpf?.value)}
+          />
+          <Input
+            label="Data de emissao do Cpf"
+            type="date"
+            {...register("cpf.emissionDate")}
+            errorMessage={error.cpf?.emissionDate?.message}
+            isInvalid={Boolean(error.cpf?.emissionDate)}
+          />
+        </div>
+        <Divider />
+        <div className="flex   flex-col space-y-6  ">
+          <div className="flex flex-row justify-between">
+            <h2 className="text-xl font-semibold">Pets</h2>
+            <Button
+              className="w-1/4"
+              color="primary"
+              onPress={() =>
+                appendPet({ name: "", type: "", gender: "", race: "" })
               }
-            }}
-          />
-          <Input
-            label="Estado"
-            value={address?.estado || client.endereco.estado}
-            {...register("endereco.estado")}
-            errorMessage={error.endereco?.estado?.message}
-            isInvalid={Boolean(error.endereco?.estado)}
-            isDisabled={isCepRegistered}
-          />
+            >
+              Adicionar Pet
+            </Button>
+          </div>
+
+          {petFields.map((field, index) => (
+            <div key={field.id} className="grid grid-cols-2 gap-5 items-center">
+              <Input
+                label={`Nome do Pet ${index + 1}`}
+                {...register(`pets.${index}.name`)}
+                errorMessage={error?.pets?.[index]?.name?.message}
+                isInvalid={Boolean(error?.pets?.[index]?.name)}
+              />
+              <Input
+                label={`Espécie do Pet ${index + 1}`}
+                {...register(`pets.${index}.type`)}
+                errorMessage={error?.pets?.[index]?.types?.message}
+                isInvalid={Boolean(error?.pets?.[index]?.type)}
+              />
+              <Input
+                label={`Raca do Pet ${index + 1}`}
+                {...register(`pets.${index}.race`)}
+                errorMessage={error?.pets?.[index]?.race?.message}
+                isInvalid={Boolean(error?.pets?.[index]?.race)}
+              />
+              <Input
+                label={`Genero do Pet ${index + 1}`}
+                {...register(`pets.${index}.gender`)}
+                errorMessage={error?.pets?.[index]?.gender?.message}
+                isInvalid={Boolean(error?.pets?.[index]?.gender)}
+              />
+
+              <div>
+                <Button color="danger" onPress={() => removePet(index)}>
+                  {`Remover Pet ${index + 1}`}
+                </Button>
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="grid grid-rows-5 gap-5">
-          <Input
-            label="Cidade"
-            value={address?.localidade || client.endereco.cidade}
-            {...register("endereco.cidade")}
-            errorMessage={error.endereco?.cidade?.message}
-            isInvalid={Boolean(error.endereco?.cidade)}
-            isDisabled={isCepRegistered}
-          />
-          <Input
-            label="Bairro"
-            value={address?.bairro || client.endereco.bairro}
-            {...register("endereco.bairro")}
-            errorMessage={error.endereco?.bairro?.message}
-            isInvalid={Boolean(error.endereco?.bairro)}
-            isDisabled={isCepRegistered}
-          />
-          <Input
-            label="Rua"
-            value={address?.logradouro || client.endereco.rua}
-            {...register("endereco.rua")}
-            errorMessage={error.endereco?.rua?.message}
-            isInvalid={Boolean(error.endereco?.rua)}
-            isDisabled={isCepRegistered}
-          />
-          <Input
-            type="number"
-            label="Número"
-            {...register("endereco.numero")}
-            errorMessage={error.endereco?.numero?.message}
-            isInvalid={Boolean(error.endereco?.numero)}
-          />
-          <Input
-            label="Informações Adicionais"
-            {...register("endereco.informacoesAdicionais")}
-            errorMessage={error.endereco?.informacoesAdicionais?.message}
-            isInvalid={Boolean(error.endereco?.informacoesAdicionais)}
-          />
+        <Divider />
+        <div className="flex flex-col space-y-6">
+          <div className="flex flex-row justify-between">
+            <h2 className="text-xl font-semibold">Rgs</h2>
+            <Button
+              color="primary"
+              className="w-1/4"
+              onPress={() =>
+                appendRg({ value: "", emissionDate: "" as unknown as Date })
+              }
+            >
+              Adicionar RG
+            </Button>
+          </div>
+          {rgsFields.map((field, index) => (
+            <div key={field.id} className="grid grid-cols-2 gap-5 items-center">
+              <Input
+                label={`Número do RG ${index + 1}`}
+                {...register(`rgs.${index}.value`)}
+                errorMessage={error?.rgs?.[index]?.value?.message}
+                isInvalid={Boolean(error?.rgs?.[index]?.value)}
+              />
+              <Input
+                label={`Data de Emissão ${index + 1}`}
+                type="date"
+                {...register(`rgs.${index}.emissionDate`)}
+                errorMessage={error?.rgs?.[index]?.emissionDate?.message}
+                isInvalid={Boolean(error?.rgs?.[index]?.emissionDate)}
+              />
+              <div>
+                <Button color="danger" onPress={() => removeRg(index)}>
+                  {`Remover Rg ${index + 1}`}
+                </Button>
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="grid grid-cols-2 gap-5">
-          <Input
-            type="number"
-            value={address?.ddd || client.telefones[0].ddd}
-            label="DDD"
-            {...register("telefones.0.ddd")}
-            errorMessage={error.telefones?.[0]?.ddd?.message}
-            isInvalid={Boolean(error.telefones?.[0]?.ddd)}
-          />
-          <Input
-            type="number"
-            label="Número de Telefone"
-            {...register("telefones.0.numero")}
-            errorMessage={error.telefones?.[0]?.numero?.message}
-            isInvalid={Boolean(error.telefones?.[0]?.numero)}
-          />
+        <Divider />
+        <div className="flex flex-col space-y-6">
+          <div className="flex flex-row justify-between">
+            <h2 className="text-xl font-semibold">Telefones</h2>
+            <Button
+              className="w-1/4"
+              color="primary"
+              onPress={() => {
+                appendPhone({ ddd: "", number: "" });
+              }}
+            >
+              Adicionar Telefone
+            </Button>
+          </div>
+          {phonesFields.map((field, index) => (
+            <div key={field.id} className="grid grid-cols-2 gap-5 items-center">
+              <Input
+                label={`DDD do Telefone ${index + 1}`}
+                {...register(`phones.${index}.ddd`)}
+                errorMessage={error?.phones?.[index]?.ddd?.message}
+                isInvalid={Boolean(error?.phones?.[index]?.ddd)}
+              />
+              <Input
+                label={`Numero do Telefone ${index + 1}`}
+                {...register(`phones.${index}.number`)}
+                errorMessage={error?.phones?.[index]?.number?.message}
+                isInvalid={Boolean(error?.phones?.[index]?.number)}
+              />
+
+              <div>
+                <Button onPress={() => removePhone(index)} color="danger">
+                  {`Remover Telefone ${index + 1}`}
+                </Button>
+              </div>
+            </div>
+          ))}
         </div>
+
         <div className="gap-5 flex flex-row">
-          <Button
-            color="danger"
-            className="text-red-600 bg-opacity-20"
-            onPress={onCancel}
-          >
+          <Button color="danger" onPress={onCancel}>
             Cancelar
           </Button>
-          <Button
-            type="submit"
-            color="success"
-            className="text-green-600 bg-opacity-20"
-            isDisabled={!isDirty}
-          >
+          <Button type="submit" color="primary">
             Confirmar
           </Button>
         </div>

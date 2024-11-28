@@ -1,25 +1,26 @@
-import { ClientDto } from "@core/dtos";
+import type { Client } from "@core";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  addressSchema,
-  cellPhoneSchema,
-  emailSchema,
+  documentSchema,
   nameSchema,
-} from "@validation/index";
+  petSchema,
+  phoneSchema,
+} from "@validation/src/schemas";
 import { useApi } from "apps/web/src/ui/hooks/use-api";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 const UpdateClientFormSchema = z.object({
-  nome: nameSchema,
-  nomeSocial: nameSchema,
-  email: emailSchema,
-  endereco: addressSchema,
-  telefones: z.array(cellPhoneSchema),
+  name: nameSchema,
+  socialName: nameSchema,
+  cpf: documentSchema,
+  pets: z.array(petSchema).optional(),
+  rgs: z.array(documentSchema).optional(),
+  phones: z.array(phoneSchema).optional(),
 });
 type UpdateClientFormProps = {
-  client: ClientDto;
+  client: Client;
   onSubmit: VoidFunction;
 };
 type UpdateClientFormData = z.infer<typeof UpdateClientFormSchema>;
@@ -28,72 +29,58 @@ export function useUpdateClientForm({
   onSubmit,
 }: UpdateClientFormProps) {
   const { clientService } = useApi();
-  const [cepError, setCepError] = useState<string | null>(null);
-  const { register, reset, handleSubmit, formState, setValue } =
+  const { register, control, reset, handleSubmit, formState } =
     useForm<UpdateClientFormData>({
       defaultValues: {
-        nome: client.nome,
-        nomeSocial: client.nomeSocial,
-        email: client.email,
-        endereco: client.endereco,
-        telefones: client.telefones,
+        name: client.name,
+        socialName: client.socialName,
+        cpf: client.cpf,
+        pets: client.pets,
+        rgs: client.rgs,
+        phones: client.phones,
       },
       resolver: zodResolver(UpdateClientFormSchema),
     });
+  const phonesFieldArray = useFieldArray({
+    control,
+    name: "phones",
+  });
+
+  const petsFieldArray = useFieldArray({
+    control,
+    name: "pets",
+  });
+
+  const rgsFieldArray = useFieldArray({
+    control,
+    name: "rgs",
+  });
   async function handleFormSubmit(formData: UpdateClientFormData) {
-    const partialClient: Record<string, unknown> = { id: client.id || -1 };
+    const partialClient: Record<string, unknown> = {};
     const updatedFields = Object.keys(formState.dirtyFields);
-
-    
-    partialClient.endereco = {
-      id: client.endereco.id, 
-      ...client.endereco, 
+    partialClient.cpf = {
+      ...client.cpf,
     };
-
-    for (const updatedField of updatedFields) {
-      if (updatedField.startsWith("endereco.")) {
-        const addressField = updatedField.replace("endereco.", ""); 
-        partialClient.endereco[addressField] = formData.endereco[addressField]; 
-      } else {
-        
-        partialClient[updatedField] =
-          formData[updatedField as keyof UpdateClientFormData];
-      }
-    }
-
-
-    const response = await clientService.updateClient(
-      partialClient as Partial<ClientDto>,
-      client.id || -1,
-    );
-
+    partialClient.pets = formData.pets || []; 
+    partialClient.rgs = formData.rgs || []; 
+    partialClient.phones = formData.phones || []; 
+    const response = await clientService.updateClient(partialClient, client.id);
     if (response.isFailure) {
       throw new Error(response.errorMessage);
     }
 
-    reset();
+    reset(formData);
     onSubmit();
   }
 
-  async function addressByCep(cep: string) {
-    const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-    const data = await response.json();
-    if (data.erro) {
-      setCepError("Cep Inexistente");
-      return null;
-    }
-    setCepError(null);
-    return data;
-  }
-
   return {
-    addressByCep,
     register,
     isDirty: formState.isDirty,
     reset,
-    setValue,
     handleSubmit: handleSubmit(handleFormSubmit),
     error: formState.errors,
-    cepError,
+    phonesFieldArray,
+    petsFieldArray,
+    rgsFieldArray,
   };
 }
