@@ -5,17 +5,14 @@ import { ClientPage } from "../../ui/components/pages/client";
 
 type PageProps = {
   params: {
-    clientId: number;
+    clientId: string;
   };
 };
 const Page = async ({ params }: PageProps) => {
-  // const apiClient = NextApiClient({ isCacheEnabled: false });
-  // apiClient.setBaseUrl("http://localhost:32831");
-  // const clientService = ClientsService(apiClient);
-  // const reponse = await clientService.getClient(params.clientId);
-  // if (reponse.isFailure) {
-    return notFound();
-  // }
-  // return <ClientPage client={reponse.body} />;
+  const apiClient = NextApiClient({ isCacheEnabled: false });
+  apiClient.setBaseUrl("http://localhost:3333");
+  const clientService = ClientsService(apiClient);
+  const reponse = await clientService.getClientDetails(params.clientId);
+  return <ClientPage client={reponse.body.client} consumptions={reponse.body.consumptions} />;
 };
 export default Page;
