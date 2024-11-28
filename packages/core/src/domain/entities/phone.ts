@@ -11,7 +11,7 @@ export class Phone {
   }
 
   get value(): string {
-    return `+${this.ddd} ${this.number}`
+    return `+55 ${this.ddd} ${this.number}`
   }
   get dto():PhoneDto{
     return{
